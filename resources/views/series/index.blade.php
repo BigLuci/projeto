@@ -28,4 +28,4 @@ Series
     
     <?php endforeach; ?>
 </ul>
-@endsection tua mae
+@endsection
