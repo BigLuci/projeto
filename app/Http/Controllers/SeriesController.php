@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SeriesFormRequest;
 use App\Serie;
 use Illuminate\Foundation\Testing\Constraints\SoftDeletedInDatabase;
 use Illuminate\Http\Request;
@@ -33,7 +34,7 @@ class SeriesController extends Controller{
         return view('series.create');
     }
 
-    public function store(Request $request)
+    public function store(SeriesFormRequest $request)
     {
         /**$nome = $request ->get('nome'); 
         *$serie = Serie::create([
@@ -41,7 +42,18 @@ class SeriesController extends Controller{
         *]);
         *sintaxe do laravel 
         *$nome = $request ->nome; */
-        $serie = Serie::create($request->all());
+
+        
+        $serie = Serie::create(['nome' => $request->nome]);
+        $qtdTemporadas = $request->qtd_temporadas;
+        for ($i = 1; $i <= $qtdTemporadas; $i++){
+            $temporada = $serie->temporadas()->create(['numero' => $i]);
+
+            for($j = 1; $j <=$request->qtd_episodios; $j++) {
+                $temporada->episodios()->create(['numero' => $j]);
+
+            }
+        }
 
         $request->session()->flash('mensagem',
          "Serie {$serie->id} criada com sucesso
@@ -50,7 +62,7 @@ class SeriesController extends Controller{
         
         /**Exibir serie criada com id */
         // echo "Série com id {$serie->id} criada: {$serie->nome}";
-        return redirect('/series');
+        return redirect()->route('listar_series');
 
       /**   $serie = new Serie();
         * $serie->nome = $nome;
@@ -66,7 +78,7 @@ class SeriesController extends Controller{
                 'mensagem',
                 "Serie removida com sucesso"
         );
-        return redirect('/series');
+        return redirect()->route('listar_series');
     }
 
 }

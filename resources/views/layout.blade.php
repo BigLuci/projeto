@@ -10,7 +10,7 @@
 <body>
 
     <div class="container">
-        <div class="jumbotron">
+        <div class="card text-center">
             <h1>@yield('cabecalho')</h1>
         </div>
 
