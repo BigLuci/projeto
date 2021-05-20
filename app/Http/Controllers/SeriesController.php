@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Episodio;
 use App\Http\Requests\SeriesFormRequest;
 use App\Serie;
+use App\Services\CriadorDeSerie;
+use App\Services\RemovedorDeSerie;
+use App\Temporada;
 use Illuminate\Foundation\Testing\Constraints\SoftDeletedInDatabase;
 use Illuminate\Http\Request;
 
@@ -34,26 +38,22 @@ class SeriesController extends Controller{
         return view('series.create');
     }
 
-    public function store(SeriesFormRequest $request)
+    public function store(
+        SeriesFormRequest $request,
+        CriadorDeSerie $criadorDeSerie)
     {
+
+        $serie = $criadorDeSerie->criarSerie(
+            $request->nome,
+            $request->qtd_temporadas,
+            $request->qtd_episodios
+        );
         /**$nome = $request ->get('nome'); 
         *$serie = Serie::create([
         *    'nome' => $nome
         *]);
         *sintaxe do laravel 
         *$nome = $request ->nome; */
-
-        
-        $serie = Serie::create(['nome' => $request->nome]);
-        $qtdTemporadas = $request->qtd_temporadas;
-        for ($i = 1; $i <= $qtdTemporadas; $i++){
-            $temporada = $serie->temporadas()->create(['numero' => $i]);
-
-            for($j = 1; $j <=$request->qtd_episodios; $j++) {
-                $temporada->episodios()->create(['numero' => $j]);
-
-            }
-        }
 
         $request->session()->flash('mensagem',
          "Serie {$serie->id} criada com sucesso
@@ -70,9 +70,9 @@ class SeriesController extends Controller{
         */
     }
 
-    public function destroy(Request $request) 
+    public function destroy(Request $request, RemovedorDeSerie $removedorDeSerie) 
     {
-        Serie::destroy($request->id);
+       $nomeSerie = $removedorDeSerie->removerSerie($request->id);
         $request->session()
             ->flash(
                 'mensagem',
