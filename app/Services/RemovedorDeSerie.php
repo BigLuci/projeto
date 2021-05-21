@@ -9,24 +9,36 @@ use Illuminate\Support\Facades\DB;
 
 class RemovedorDeSerie 
 {
-    public function removerSerie(int $serieId): string 
+    public function removerSerie(int $serieId):  string
     {
         $nomeSerie=''; 
         DB::transaction(function () use ($serieId, &$nomeSerie) {
             $serie = Serie::find($serieId);
             $nomeSerie = $serie->nome;
-            $serie->temporadas->each(function (Temporada $temporada) {
-                $temporada->episodios->each(function (Episodio $episodio) {
-                    $episodio->delete();
-                });
-                $temporada->delete();
-            });
             $serie->delete();
+            
+            $this->removerTemporada($serie);
 
         });
-
-        
-
-        return redirect()->route('listar_series');
+        return redirect()->to('listar_series');
     }
+
+    private function removerTemporada(Serie $serie): void
+    {
+        $serie->temporadas->each(function (Temporada $temporada) {
+           
+            $this->removerEpisodio($temporada);
+            $temporada->delete();
+        });
+        
+    }
+    
+    private function removerEpisodio(Temporada $temporada):void
+    {
+        $temporada->episodios->each(function (Episodio $episodio) {
+            $episodio->delete();
+        });
+    }
+    
+
 }
