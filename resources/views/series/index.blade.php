@@ -16,10 +16,29 @@ Series
 
 <ul class="list-group">
     <?php foreach ($series as $serie): ?>
-    <li class="list-group-item d-flex justify-content-between align-items-center"><?= $serie->nome; ?>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span id="nome-serie-{{ $serie->id }}">{{ $serie->nome }}</span>
+
+        <div class="input-group w-50" hidden id="input-nome-serie-{{ $serie->id }}">
+            <input type="text" class="form-control" value="{{ $serie->nome }}">
+            <div class="input-group-append">
+                <button class="btn btn-primary " onclick="editarSerie({{ $serie->id }})">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                        <path d="M13.485 1.431a1.473 1.473 0 0 1 2.104 2.062l-7.84 9.801a1.473 1.473 0 0 1-2.12.04L.431 8.138a1.473 1.473 0 0 1 2.084-2.083l4.111 4.112 6.82-8.69a.486.486 0 0 1 .04-.045z"/>
+                      </svg>
+                </button>
+                @csrf
+            </div>
+        </div>
         {{-- {{$serie->nome}} sintaxe do blade--}}
 
         <span class="d-flex">
+            <button class="btn btn-info btn-sm mr-1" onclick="toggleInput({{ $serie->id }})">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                  </svg>
+            </button>
             <a href="/series/ {{$serie->id}}/temporadas" class="btn btn-info btn-sm mr-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
@@ -41,4 +60,37 @@ Series
     </li> 
     <?php endforeach; ?>
 </ul>
+
+<script>
+    function toggleInput(serieId) {
+        const nomeSerieEl = document.getElementById(`nome-serie-${serieId}`);
+        const inputSerieEl = document.getElementById(`input-nome-serie-${serieId}`);
+        if (nomeSerieEl.hasAttribute('hidden')) {
+            nomeSerieEl.removeAttribute('hidden');
+            inputSerieEl.hidden = true;
+        } else {
+
+        inputSerieEl.removeAttribute('hidden');
+        nomeSerieEl.hidden = true;
+
+        }
+    }
+
+    function editarSerie(serieId) {
+        let formData = new FormData();
+        const nome = document
+        .querySelector(`#input-nome-serie-${serieId} > input`)
+        .value;
+        const token = document.querySelector('input[name="_token"]').value;
+        alert(token);
+        return;
+        formData.append('nome', nome);
+        
+        const url = `/series/${serieId}/editaNome`;
+        //fazer uma requisição para url
+        fetch(url, {
+            body: formData
+        });
+    }
+</script>
 @endsection
