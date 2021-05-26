@@ -25,7 +25,9 @@ Route::post('/series/{id}/editaNome', 'SeriesController@editaNome');
 
 Route::get('/series/{seriesId}/temporadas', 'TemporadasController@index');
 
-Route::get('/temporadas/{temporadaId}/episodios', 'EpisodiosController@index');
+Route::get('/temporadas/{temporada}/episodios', 'EpisodiosController@index');
+// Route::post('/temporadas/{temporadaId}/episodios/assistir', 'EpisodiosController@assistir');
+
 
 #Route::get('produtos', 'MeuControlador@produtos');
 #Route::get('nome', 'MeuControlador@getNome');
